@@ -1,0 +1,89 @@
+<<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Modal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="Modal" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static">
+      <div class="modal-dialog">
+         <div class="modal-content">
+            <form method="post" id="form" enctype="multipart/form-data">
+               <div class="modal-header" style="background-color: lightblue;">
+                  <h4 class="modal-title" >Add Data</h4>
+                  <button type="button" class="close" data-dismiss="modal" >&times;</button>
+               </div>
+
+               <div class="modal-body">
+                  {{csrf_field()}} {{ method_field('POST') }}
+                  <span id="form_tampil"></span>
+                  <input type="hidden" name="id" id="id">
+                  <div class="form-group {{ $errors->has('id_siswa') ? 'has-error' : '' }}">
+                     <label>Nama Siswa</label>
+                     <select class="form-control select-dua" name="id_siswa" id="id_siswa" style="width: 468px">
+                        <option disabled selected>Nama Siswa</option>
+                        @foreach($siswa as $data)
+                        <option value="{{$data->id}}">{{$data->nama}}</option>
+                        @endforeach
+                     </select>
+                     @if ($errors->has('id_siswa'))
+                     <span class="help-block has-error id_siswa_error">
+                        <strong>{{$errors->first('id_siswa')}}</strong>
+                     </span>
+                     @endif
+                  </div>
+                  <div class="form-group">
+                     <label>Buku</label>
+                     <input type="text" name="id_buku" id="id_buku" class="form-control" readonly>
+                     <span class="help-block has-error kota_error"></span>
+                  </div>
+                  <div class="form-group">
+                     <label>Tanggal Pinjam Buku</label>
+                     <input type="date" name="tanggal_pinjam" id="tanggal_pinjam" class="form-control" readonly>
+                     <span class="help-block has-error kota_error"></span>
+                  </div>
+                  <div class="form-group">
+                     <label>Tanggal Kembali Buku</label>
+                     <input type="date" name="tanggal_kembali" id="tanggal_kembali" class="form-control" >
+                     <span class="help-block has-error kota_error"></span>
+                  </div>
+                  <div class="form-group">
+                     <label>Tanggal Harus Kembali Buku</label>
+                     <input type="date" name="tanggal_harus_kembali" id="tanggal_harus_kembali" class="form-control" readonly>
+                     <span class="help-block has-error kota_error"></span>
+                  </div>
+				<div class="modal-footer">
+					<input type="submit" name="submit" id="aksi" value="Tambah" class="btn btn-info" />
+					<input type="button" value="Cancel" class="btn btn-default" data-dismiss="modal"/>
+				</div>
+               </form>
+            </div>
+         </div>
+      </div>
+      <script type="text/javascript">
+    $(document).ready(function(){
+      $('#id_siswa').on('change', function(){
+        var ID = $(this).val();
+          if(ID){
+            $.ajax({
+              url: 'pinjam/pengembalian/'+ID,
+              type: "GET",
+              dataType: "json",
+              success: function (data){
+                $('#id_buku').val(data.id_buku);
+                $('#tanggal_pinjam').val(data.tanggal_pinjam);
+                $('#tanggal_harus_kembali').val(data.tanggal_harus_kembali);
+              }
+            });
+          }
+          else
+          {
+            $('#id_buku','#tanggal_pinjam','#tanggal_harus_kembali').empty();
+          }
+      });
+    });
+</script>
+</body>
+</html>
