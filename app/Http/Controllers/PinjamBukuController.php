@@ -299,6 +299,8 @@ class PinjamBukuController extends Controller
         $pinjam = PinjamBuku::find($request->input('id'));
         if($pinjam->delete())
         {
+            $stok = Buku::where('id',$pinjam->id_buku)->first();
+            $stok->tersedia = $stok->tersedia +1;
             echo 'Data Deleted';
         }
         
