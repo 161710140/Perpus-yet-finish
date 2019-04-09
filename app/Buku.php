@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Session;
 
 class Buku extends Model
 {
@@ -13,4 +14,6 @@ class Buku extends Model
     {
         return $this->hasMany('App\PinjamBuku','id_buku');
     }
+	
+	
 }

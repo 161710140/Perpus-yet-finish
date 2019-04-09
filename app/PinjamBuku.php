@@ -24,4 +24,5 @@ class PinjamBuku extends Model
     {
         return $this->belongsTo('App\Buku','id_buku');
     }
+
 }

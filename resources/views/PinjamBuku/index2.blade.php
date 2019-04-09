@@ -40,7 +40,6 @@
                         <th>Tanggal Kembali</th>
                         <th>Tanggal Harus Kembali Buku</th>
                         <th>Status</th>
-                        <th>Action</th>
                      </tr>
                   </thead>
                </table>
@@ -72,7 +71,6 @@
                   { data: 'tanggal_kembali', name: 'tanggal_kembali' },
                   { data: 'tanggal_harus_kembali', name: 'tanggal_harus_kembali' },
                   { data: 'hukuman', name: 'hukuman' },
-                  { data: 'action'},
               ],
             });
             setTimeout(function(){

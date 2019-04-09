@@ -34,7 +34,7 @@
                   </div>
                   <div class="form-group">
                      <label>Tahun Terbit</label>
-                     <input type="text" name="tahun_terbit" id="tahun_terbit" class="form-control" 
+                     <input type="text" name="tahun_terbit" maxlength="4" id="tahun_terbit" class="form-control" 
                      placeholder="Tahun Terbit Buku">
                      <span class="help-block has-error tahun_terbit_error"></span>
                   </div>

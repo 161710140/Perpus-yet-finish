@@ -6,6 +6,7 @@ use App\Buku;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Html\Builder;
 use Yajra\DataTables\DataTables;
+use Session;
 class BukuController extends Controller
 {
     /**
@@ -142,11 +143,13 @@ class BukuController extends Controller
 
     public function removedata(Request $request)
     {
+
         $buku = Buku::find($request->input('id'));
         if($buku->delete())
         {
             echo 'Data Deleted';
         }
+        if(!$buku->delete()) return redirect()->back();
     }
 
     function massremove(Request $request)

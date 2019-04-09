@@ -36,6 +36,7 @@
                         <th>Buku</th>
                         <th>Tanggal Pinjam</th>
                         <th>Tanggal Harus Kembali Buku</th>
+                        <th>Action</th>
                      </tr>
                   </thead>
                </table>
@@ -66,6 +67,7 @@
                   { data: 'buku'},
                   { data: 'tanggal_pinjam', name: 'tanggal_pinjam' },
                   { data: 'tanggal_harus_kembali', name: 'tanggal_harus_kembali' },
+                  { data: 'action', orderable: false, searchable: false },
               ],
             });
             setTimeout(function(){
@@ -220,5 +222,36 @@
             $('#tab_pinjam').DataTable().ajax.reload();
           });
        });
+
+          $(document).on('click', '.delete', function(){
+            var bebas = $(this).attr('id');
+              if (confirm("Yakin Dihapus ?")) {
+
+                $.ajax({
+                  url: "{{route('ajaxdata.removedatapinjam')}}",
+                  method: "get",
+                  data:{id:bebas},
+                  success: function(data){
+                    swal({
+                      title:'Success Delete!',
+                      text:'Data Berhasil Dihapus',
+                      type:'success',
+                      timer:'1500'
+                    });
+                    $('#tab_pinjam').DataTable().ajax.reload();
+                  }
+                })
+              }
+              else
+              {
+                swal({
+                  title:'Batal',
+                  text:'Data Tidak Jadi Dihapus',
+                  type:'error',
+                  });
+                return false;
+              }
+            });
+
       </script>
 @endpush

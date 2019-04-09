@@ -12,6 +12,7 @@ use Yajra\DataTables\Html\Builder;
 use Yajra\DataTables\DataTables;
 use DB;
 use Excel;
+use App\Traits\SessionFlash;
 class PinjamBukuController extends Controller
 {
     /**
@@ -37,12 +38,19 @@ class PinjamBukuController extends Controller
         ->addColumn('buku', function($pinjam){
             return $pinjam->Buku->judul;
         })
-        ->rawColumns(['kelas','buku','siswa'])->make(true);
+        ->addColumn('action',function($pinjam){
+             return '<a href="#" class="btn btn-xs btn-danger delete" id="'.$pinjam->id.'">
+                    <i class="glyphicon glyphicon-remove"></i> Delete</a>
+                    <a href="'.url('return_book/'.$pinjam->id).'"  class="btn btn-xs btn-primary" data-id="'.$pinjam->id.'">
+                    <i class="glyphicon glyphicon-edit"></i> Kembalikan</a>&nbsp';
+        })
+        ->rawColumns(['kelas','buku','siswa','action'])->make(true);
     }
 
     public function jsonpengembalian()
     {
         $PINJAM = PinjamBuku::all();
+        $PINJAM = PinjamBuku::orderBy('id','created_at','desc')->get();
         return Datatables::of($PINJAM)
         ->addColumn('siswa', function($PINJAM){
             return $PINJAM->Siswa->nama;
@@ -63,10 +71,6 @@ class PinjamBukuController extends Controller
                     return '<font color="blue"><b>Tepat Waktu</font></b>';
                 }
             })
-            ->addColumn('action', function($kelas){
-                return '<a href="#" class="btn btn-xs btn-primary edit" data-id="'.$kelas->id.'">
-                <i class="glyphicon glyphicon-edit"></i>Kembalikan</a>&nbsp';
-                })    
         ->rawColumns(['siswa','buku','hukuman','action'])->make(true);
     }
 
@@ -224,6 +228,9 @@ class PinjamBukuController extends Controller
         $data = PinjamBuku::findOrFail($id);
         $data->tanggal_kembali = $request->tanggal_kembali;
         $data->save();
+        $stok = Buku::where('id', $data->id_buku)->first();
+        $stok->tersedia = $stok->tersedia + 1;
+        $stok->save();
         return response()->json(['success'=>true]);
     }
     public function KelasSiswa($id)
@@ -254,27 +261,59 @@ class PinjamBukuController extends Controller
         return json_encode($data);
     }
 
-    function excel()
+   public function export_peminjaman(){
+        $peminjamans = DB::table('pinjam_bukus')->get();
+        $peminjamans = PinjamBuku::with(['buku','siswa','kelas'])->get();
+        $peminjamans = PinjamBuku::wheremonth('tanggal_pinjam', date('m'))->get();
+        $datapeminjamans = "";
+            if(count($peminjamans) >0 ){
+                $datapeminjamans .='<table border="1">
+                <tr>
+                    <th>Nama Siswa</th>
+                    <th>Buku</th>
+                    <th>Kelas</th>
+                    <th>Tanggal Pinjam</th>
+                    <th>Tanggal Harus Kembali</th>  
+                    <th>Tanggal Kembali Buku</th>  
+                </tr>';
+            foreach ($peminjamans as $peminjaman) {
+                $datapeminjamans .= '
+                <tr>
+                    <td>'.$peminjaman->Siswa->nama.'</td>
+                    <td>'.$peminjaman->Buku->judul.'</td>
+                    <td>'.$peminjaman->Kelas->kelas.'</td>
+                    <td>'.$peminjaman->tanggal_pinjam.'</td>
+                    <td>'.$peminjaman->tanggal_harus_kembali.'</td>
+                    <td>'.$peminjaman->tanggal_kembali.'</td>
+                </tr>';
+            }
+            $datapeminjamans .='</table>';
+        }
+        header('Content-Type: application/xls');
+        header('Content-Disposition: attachment; filename=File peminjaman.xls');
+        echo $datapeminjamans;
+        // return $pengujungs;
+    }
+    public function removedata(Request $request)
     {
-     $excelpeminjaman = DB::table('pinjam_bukus')->get()->toArray();
-     $peminjaman_array[] = array('Nama Siswa', 'Buku', 'Tanggal Pinjam', 'Tanggal Kembali', 'Tanggal Harus Kembali');
-     foreach($excelpeminjaman as $peminjaman)
-     {
+        $pinjam = PinjamBuku::find($request->input('id'));
+        if($pinjam->delete())
+        {
+            echo 'Data Deleted';
+        }
+        
+    }
 
-      $peminjaman_array[] = array(
-       'Nama Siswa'  => $peminjaman->id_siswa,
-       'Buku'   => $peminjaman->id_buku,
-       'Tanggal Pinjam'    => $peminjaman->tanggal_pinjam,
-       'Tanggal Kembali'  => $peminjaman->tanggal_kembali,
-       'Tanggal Harus Kembali'   => $peminjaman->tanggal_harus_kembali,
-      );
-     }
-     Excel::create('PinjamBuku', function($excel) use ($peminjaman_array){
-      $excel->setTitle('PinjamBuku');
-      $excel->sheet('PinjamBuku', function($sheet) use ($peminjaman_array){
-       $sheet->fromArray($peminjaman_array, null, 'A1', false, false);
-      });
-     })->download('xlsx');
+     public function return_book($id){
+        $kembali = PinjamBuku::findOrFail($id);
+        if ($kembali && $kembali->tanggal_kembali == null) { 
+            $kembali->tanggal_kembali = date('Y-m-d');
+            $kembali->save();
+            $stok = Buku::where('id',$kembali->id_buku)->first();
+            $stok->tersedia = $stok->tersedia +1;
+            $stok->save();
+            return redirect('/pengembalian');
+        }
     }
 
 

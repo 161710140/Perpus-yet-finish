@@ -23,7 +23,7 @@ Route::get('/home2',function (){
    return view('home2');
 });
 
-Route::get('/export_excel/excel', 'PinjamBukuController@excel')->name('export_excel.excel');
+Route::get('/export_excel/excel', 'PinjamBukuController@export_peminjaman')->name('export_excel.excel');
 
 Route::get('nama/{id}',array('as'=>'myform.ajax','uses'=>'PinjamBukuController@KelasSiswa'));
 //Siswa
@@ -61,6 +61,8 @@ Route::resource('/pinjam','PinjamBukuController');
 Route::post('storepinjam','PinjamBukuController@store')->name('tambah');
 Route::post('pinjam/edit/{id}','PinjamBukuController@update');
 Route::get('pinjam/getedit/{id}','PinjamBukuController@edit');
+Route::get('ajaxdata/removedatapinjam', 'PinjamBukuController@removedata')->name('ajaxdata.removedatapinjam');
+
 
 //Pengembalian
 Route::get('/jsonpengembalian','PinjamBukuController@jsonpengembalian');
@@ -68,6 +70,8 @@ Route::get('/pengembalian','PinjamBukuController@index2');
 Route::post('storepengembalian','PinjamBukuController@store2')->name('tambah');
 Route::post('pinjamm/edit/{id}','PinjamBukuController@update2');
 Route::get('pinjam/pengembalian/{id}',array('as'=>'myform.ajax','uses'=>'PinjamBukuController@getedit'));
+Route::get('return_book/{id}','PinjamBukuController@return_book');
+
 
 
 Auth::routes();
