@@ -27,6 +27,10 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
+               <div align="center">
+                <a href="{{ route('export_excel.excel') }}" class="btn btn-success">Export to Excel
+                </a>
+                </div>
               <table id="tab_pinjam" class="table table-bordered" style="width:100%">
                   <thead>
                      <tr>

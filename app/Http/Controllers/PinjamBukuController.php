@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Html\Builder;
 use Yajra\DataTables\DataTables;
 use DB;
+use Excel;
 class PinjamBukuController extends Controller
 {
     /**
@@ -71,9 +72,9 @@ class PinjamBukuController extends Controller
 
     public function countbuku($value='')
     {
-        PinjamBuku::count();
+        PinjamBuku::where('id_siswa')->count();
         $count = PinjamBuku::count();
-        return View::make('home2')->with('count', $count);
+        return view('home2',compact('count'));
 
     }
 
@@ -82,7 +83,8 @@ class PinjamBukuController extends Controller
         $kelas = Kelas::all();
         $siswa = Siswa::all();
         $buku = Buku::all();
-        return view('PinjamBuku.index',compact('kelas','siswa','buku'));
+        $excelpeminjaman = DB::table('pinjam_bukus')->get();
+        return view('PinjamBuku.index',compact('kelas','siswa','buku','excelpeminjaman'));
     }
 
     public function index2()
@@ -250,6 +252,29 @@ class PinjamBukuController extends Controller
         $data['tanggal_pinjam']=$pinjam->tanggal_pinjam;
         $data['tanggal_harus_kembali']=$pinjam->tanggal_harus_kembali;
         return json_encode($data);
+    }
+
+    function excel()
+    {
+     $excelpeminjaman = DB::table('pinjam_bukus')->get()->toArray();
+     $peminjaman_array[] = array('Nama Siswa', 'Buku', 'Tanggal Pinjam', 'Tanggal Kembali', 'Tanggal Harus Kembali');
+     foreach($excelpeminjaman as $peminjaman)
+     {
+
+      $peminjaman_array[] = array(
+       'Nama Siswa'  => $peminjaman->id_siswa,
+       'Buku'   => $peminjaman->id_buku,
+       'Tanggal Pinjam'    => $peminjaman->tanggal_pinjam,
+       'Tanggal Kembali'  => $peminjaman->tanggal_kembali,
+       'Tanggal Harus Kembali'   => $peminjaman->tanggal_harus_kembali,
+      );
+     }
+     Excel::create('PinjamBuku', function($excel) use ($peminjaman_array){
+      $excel->setTitle('PinjamBuku');
+      $excel->sheet('PinjamBuku', function($sheet) use ($peminjaman_array){
+       $sheet->fromArray($peminjaman_array, null, 'A1', false, false);
+      });
+     })->download('xlsx');
     }
 
 

@@ -23,6 +23,8 @@ Route::get('/home2',function (){
    return view('home2');
 });
 
+Route::get('/export_excel/excel', 'PinjamBukuController@excel')->name('export_excel.excel');
+
 Route::get('nama/{id}',array('as'=>'myform.ajax','uses'=>'PinjamBukuController@KelasSiswa'));
 //Siswa
 Route::get('/jsonSiswa','SiswaController@json');

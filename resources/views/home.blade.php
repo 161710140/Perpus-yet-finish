@@ -5,10 +5,11 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Silahkan daftar terlebih dahulu atau login jika sudah memiliki akun</div>
+                <div class="card-header">Silahkan login</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 @endsection
