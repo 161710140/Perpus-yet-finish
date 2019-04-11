@@ -37,6 +37,7 @@
                         <th>Kelas</th>
                         <th>Action</th>
                         <th><button type="button" name="bulk_delete" id="bulk_delete" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-remove">Delete Selected</i></button></th>
+                        <th>Select All : <input id="checkall" class='' type="checkbox" >
                      </tr>
                   </thead>
                </table>
@@ -278,6 +279,17 @@
             }
         }
       });
+           $("#checkall").click(function (){
+     if ($("#checkall").is(':checked')){
+        $(".siswa_checkbox").each(function (){
+           $(this).prop("checked", true);
+           });
+        }else{
+           $(".siswa_checkbox").each(function (){
+                $(this).prop("checked", false);
+           });
+        }
+     });
 
     });
       </script>

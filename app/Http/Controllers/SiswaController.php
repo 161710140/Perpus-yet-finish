@@ -116,10 +116,10 @@ class SiswaController extends Controller
     public function update(Request $request,$id)
     {
         $this->validate($request, [
-            'no_absen' => 'required|numeric|unique:siswas,no_absen',
+            'no_absen' => 'required|numeric',
             'nama' => 'required',
             'id_kelas' => 'required',
-            'no_induk' => 'required|numeric|unique:siswas,no_induk',
+            'no_induk' => 'required|numeric',
         ],[
             'no_absen.required'=>':Attribute harus diisi',
             'nama.required'=>':Attribute harus diisi',
